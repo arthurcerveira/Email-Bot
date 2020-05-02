@@ -5,10 +5,12 @@ from email.mime.text import MIMEText
 
 from flask import Flask, request
 
-app = Flask(__name__)
-
 EMAIL_ENV = "BOT_EMAIL"
 PASSWORD_ENV = "BOT_PASSWORD"
+
+EMAIL_FROM = "Email Bot"
+
+app = Flask(__name__)
 
 
 @app.route('/send', methods=['POST'])
@@ -26,7 +28,7 @@ def send_email():
     text = req_data['text']
     subject = req_data['subject']
 
-    message = create_message(email, recipient, subject)
+    message = create_message(recipient, subject)
     message.attach(MIMEText(text, 'plain'))
     
     body = message.as_string()
@@ -46,9 +48,9 @@ def authenticate_email(email, password):
     return session
 
 
-def create_message(email, recipient, subject):
+def create_message(recipient, subject):
     message = MIMEMultipart()
-    message['From'] = email
+    message['From'] = EMAIL_FROM
     message['To'] = recipient
     message['Subject'] = subject
 
