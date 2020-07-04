@@ -11,9 +11,13 @@ PASSWORD_ENV = "BOT_PASSWORD"
 
 EMAIL_FROM = "Email Bot"
 
+# Nutrir-Com-Tempero env variable
+RECIPIENT_ENV = "NUTRIR_RECIPIENT"
+
 app = Flask(__name__)
 
 
+# Email function logger endpoint
 @app.route('/send', methods=['POST'])
 def send_email():
     try:
@@ -35,7 +39,7 @@ def send_email():
 
         message = create_message(recipient, subject)
         message.attach(MIMEText(text, 'plain'))
-        
+
         body = message.as_string()
 
         # Send the email
@@ -84,3 +88,46 @@ def is_subject_valid(subject):
             return False
 
     return True
+
+
+# Nutrir-Com-Tempero contact form endpoint
+@app.route('/contact', methods=['POST'])
+def contact():
+    try:
+        recipient = os.environ.get(RECIPIENT_ENV)
+
+        # Initialize session
+        email = os.environ.get(EMAIL_ENV)
+        password = os.environ.get(PASSWORD_ENV)
+
+        session = authenticate_email(email, password)
+
+        # Get data from request
+        req_data = request.get_json()
+
+        name = req_data['name']
+        email_sender = req_data['email']
+
+        # Validate email address
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email_sender):
+            return {'error': 'Invalid email address'}
+
+        text = req_data['text']
+
+        email_body = f"Remetente: {email_sender}\n\nMensagem: \n{text}\n"
+
+        subject = f"Mensagem enviada por {name} em Nutrir Com Tempero"
+
+        message = create_message(recipient, subject)
+        message.attach(MIMEText(email_body, 'plain', 'utf-8'))
+
+        body = message.as_string()
+
+        # Send the email
+        session.sendmail(email, recipient, body)
+        session.quit()
+
+        return {'message': 'Email sent succesfully!'}
+
+    except:
+        return {'error': 'There was an error processing the request'}
