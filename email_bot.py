@@ -128,13 +128,23 @@ def contact():
         session.quit()
 
         response = jsonify({'message': 'Email sent succesfully!'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add("Access-Control-Allow-Origin", '*')
+        response.headers.add("Access-Control-Allow-Credentials", True)
+        response.headers.add('Access-Control-Allow-Methods',
+                             'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add("Access-Control-Allow-Headers",
+                             'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json')
 
         return response
 
     except:
         response = jsonify(
             {'error': 'There was an error processing the request'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add("Access-Control-Allow-Origin", '*')
+        response.headers.add("Access-Control-Allow-Credentials", True)
+        response.headers.add('Access-Control-Allow-Methods',
+                             'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add("Access-Control-Allow-Headers",
+                             'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json')
 
         return response
