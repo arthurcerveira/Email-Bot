@@ -4,7 +4,7 @@ import re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 EMAIL_ENV = "BOT_EMAIL"
 PASSWORD_ENV = "BOT_PASSWORD"
@@ -127,7 +127,14 @@ def contact():
         session.sendmail(email, recipient, body)
         session.quit()
 
-        return {'message': 'Email sent succesfully!'}
+        response = jsonify({'message': 'Email sent succesfully!'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+
+        return response
 
     except:
-        return {'error': 'There was an error processing the request'}
+        response = jsonify(
+            {'error': 'There was an error processing the request'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+
+        return response
